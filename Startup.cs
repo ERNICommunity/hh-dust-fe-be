@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +22,13 @@ namespace hh_fe
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<DustContext>(opt => opt.UseInMemoryDatabase("DustDatabase"));
+
+            var dbConf = Configuration.GetSection("DB");
+            var dbConnectionString = $"Host={dbConf["HOST"]};Database={dbConf["DATABASE"]};Username={dbConf["USER"]};Password={dbConf["PASSWORD"]}";
+            services
+                .AddEntityFrameworkNpgsql()
+                .AddDbContext<DustContext>(options => options.UseNpgsql(dbConnectionString))
+                .AddScoped<DatabaseInitializer>();
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

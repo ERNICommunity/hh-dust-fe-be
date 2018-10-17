@@ -24,8 +24,9 @@ namespace hh_fe
 
                 try
                 {
-                    var context = services.GetRequiredService<DustContext>();
-                    context.Database.EnsureCreated();
+                    // Migrate database (+ optionally seed database with demo data)
+                    var dbInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+                    dbInitializer.Run();
                 }
                 catch (Exception ex)
                 {
