@@ -55,7 +55,7 @@ import { ConfigService } from './service/config.service';
       multi: true
     }, {
       provide: APP_INITIALIZER,
-      useFactory: ConfigService.factory,
+      useFactory: (httpClient: HttpClient, baseUrl: string) => () => ConfigService.initialize(httpClient, baseUrl),
       deps: [HttpClient, 'BASE_URL'],
       multi: true
     }],
