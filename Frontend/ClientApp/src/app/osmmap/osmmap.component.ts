@@ -7,14 +7,14 @@ import VectorLayer from 'ol/layer/Vector';
 import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
-import { defaults as defaultControls, OverviewMap, Attribution, ScaleLine } from 'ol/control';
+import { defaults as defaultControls, Attribution, ScaleLine } from 'ol/control';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { getBottomLeft, getTopRight } from 'ol/extent';
-import Feature from 'ol/Feature';
+import Feature, { FeatureLike } from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
-import ObjectEvent from 'ol/Object';
+import { ObjectEvent } from 'ol/Object';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
@@ -59,7 +59,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             source: this._sensorsVectorSource,
             distance: 30
           }),
-          style: f => this.getStyle(f)
+          style: this.getStyle.bind(this)
         })
       ],
       view: new View({
@@ -70,7 +70,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       controls: defaultControls({attribution: false}).extend([
         new Attribution({collapsible: true}),
         new ScaleLine(),
-        new OverviewMap(),
         new UserLocation(m =>  this.navigateMapToUsersPosition(m))
       ])
     });
@@ -133,7 +132,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private navigateMapToUsersPosition(m: Map) {
-    m.getView().fit(this._positionFeature.getGeometry(), { duration: 1000 });
+    m.getView().fit(this._positionFeature.getGeometry().getExtent(), { duration: 1000 });
   }
 
   // calculate minimal zoom level that allows to see only one world at given map size
@@ -147,7 +146,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this._resizeSubscription.unsubscribe();
   }
 
-  private getStyle(feature: Feature) {
+  private getStyle(feature: FeatureLike, resolution: number) {
     const features = feature.get('features');
     if (features.length === 1) {
       const data = (features[0].get('data') as SensorDto);
