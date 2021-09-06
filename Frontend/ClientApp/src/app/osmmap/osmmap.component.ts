@@ -10,12 +10,12 @@ import Cluster from 'ol/source/Cluster';
 import { defaults as defaultControls, Attribution, ScaleLine } from 'ol/control';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { getBottomLeft, getTopRight } from 'ol/extent';
-import Feature, { FeatureLike } from 'ol/Feature';
+import Feature from 'ol/Feature';
+import RenderFeature from 'ol/render/Feature';
 import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
 import { ObjectEvent } from 'ol/Object';
-import MapBrowserEvent from 'ol/MapBrowserEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
 import { Subscription, fromEvent, timer, EMPTY } from 'rxjs';
@@ -35,9 +35,9 @@ import { ConfigService } from '../service/config.service';
 export class OsmMapComponent implements OnInit, OnDestroy {
   private _sensorsVectorSource = new VectorSource();
   private _positionFeature = new Feature();
-  private _mapMoveSubscription: Subscription;
-  private _resizeSubscription: Subscription;
-  @ViewChild(PopupComponent) private _popup: PopupComponent;
+  private _mapMoveSubscription!: Subscription;
+  private _resizeSubscription!: Subscription;
+  @ViewChild(PopupComponent) private _popup!: PopupComponent;
 
   constructor(private _dustService: DustService, private _configService: ConfigService) {}
 
@@ -83,10 +83,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       projection: osmMap.getView().getProjection()
     });
     geolocation.on('error', err => console.error('geolocation error', err));
-    geolocation.on('change', evt => this._positionFeature.setGeometry(evt.target.getAccuracyGeometry()));
-    geolocation.once('change', evt => osmMap.getView().animate({center: evt.target.getPosition()}));
+    geolocation.on('change', evt => this._positionFeature.setGeometry((evt.target as Geolocation).getAccuracyGeometry()));
+    geolocation.once('change', evt => osmMap.getView().animate({center: (evt.target as Geolocation).getPosition()}));
 
-    osmMap.on('click', (evt: MapBrowserEvent) => {
+    osmMap.on('click', evt => {
       const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
       if (features && features.get('features').length === 1) {
         this._popup.open(features.get('features')[0].get('data'));
@@ -95,7 +95,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this._mapMoveSubscription = fromEvent<MapEvent>(osmMap, 'moveend').pipe(
       debounceTime(1000),
-      map(evt => [toLonLat(getBottomLeft(evt.frameState.extent)), toLonLat(getTopRight(evt.frameState.extent))]),
+      // tslint:disable-next-line: no-non-null-assertion
+      map(evt => [toLonLat(getBottomLeft(evt.frameState!.extent)), toLonLat(getTopRight(evt.frameState!.extent))]),
       switchMap(extent => timer(0, this._configService.autorefreshInterval).pipe( // emit immediatelly, then every configured refresh period
         map(_ => extent)
       )),
@@ -112,7 +113,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this._resizeSubscription = fromEvent<ObjectEvent>(osmMap, 'change:size').pipe(
       debounceTime(100),
-      map(evt => this.calculateMinZoom(evt.target.getTargetElement()))
+      map(evt => this.calculateMinZoom((evt.target as Map).getTargetElement()))
     ).subscribe(
       zoom => osmMap.getView().setMinZoom(zoom),
       err => console.error('resizeSubscription fail', err)
@@ -146,10 +147,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this._resizeSubscription.unsubscribe();
   }
 
-  private getStyle(feature: FeatureLike, resolution: number) {
+  private getStyle(feature: RenderFeature | Feature<any>, resolution: number): Style[] {
     const features = feature.get('features');
     if (features.length === 1) {
-      const data = (features[0].get('data') as SensorDto);
+      const data = features[0].get('data') as SensorDto;
       const matter25 = data.particulateMatter25;
       const matter100 = data.particulateMatter100;
       return [
@@ -162,7 +163,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             })
           }),
           text: new Text({
-            text: matter25 && matter25.toFixed(1),
+            text: matter25.toFixed(1),
             scale: 1.2,
             offsetY: 20
           })
@@ -175,7 +176,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             })
           }),
           text: new Text({
-            text: matter100 && matter100.toFixed(1),
+            text: matter100.toFixed(1),
             scale: 1.2
           })
         })
@@ -186,7 +187,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           image: new Circle({
             radius: 20,
             stroke: new Stroke({
-              color: this.getColor25(this.getAverage(features as Feature[], 'particulateMatter25')),
+              color: this.getColor25(this.getAverage(features, 'particulateMatter25')),
               width: 12.5
             })
           }),
@@ -195,7 +196,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           image: new Circle({
             radius: 12.5,
             fill: new Fill({
-              color: this.getColor100(this.getAverage(features as Feature[], 'particulateMatter100')),
+              color: this.getColor100(this.getAverage(features, 'particulateMatter100')),
             })
           }),
           text: new Text({
@@ -216,7 +217,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         return [0, 255, 0, 0.5];
       case matterDensity < 50:
         return [255, 255, 0, 0.5];
-      case matterDensity >= 50:
+      default:
         return [255, 0, 0, 0.5];
     }
   }
@@ -230,12 +231,12 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         return [0, 255, 0, 0.5];
       case matterDensity < 100:
         return [255, 255, 0, 0.5];
-      case matterDensity >= 100:
+      default:
         return [255, 0, 0, 0.5];
     }
   }
 
-  private getAverage(matterDensities: Feature[], key: string): number {
-    return matterDensities.reduce((a, b) => a + (b.get('data') as SensorDto)[key], 0) / matterDensities.length;
+  private getAverage(matterDensities: any[], key: string): number {
+    return matterDensities.reduce((a, b) => a + b.get('data')[key], 0) / matterDensities.length;
   }
 }

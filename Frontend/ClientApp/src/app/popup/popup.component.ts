@@ -8,15 +8,15 @@ import { SensorDto } from '../service/sensor.dto';
   styleUrls: ['./popup.component.css']
 })
 export class PopupComponent {
-  @ViewChild('content') private _content;
+  @ViewChild('content') private _content: any;
 
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  particulateMatter25: number;
-  particulateMatter100: number;
+  id = 0;
+  name: string | undefined;
+  latitude: number | undefined;
+  longitude: number | undefined;
+  timestamp: string | undefined;
+  particulateMatter25: number | undefined;
+  particulateMatter100: number | undefined;
 
   constructor(private _modalService: NgbModal) { }
 

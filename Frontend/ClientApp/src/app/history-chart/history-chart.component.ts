@@ -13,10 +13,10 @@ import { DustService } from '../service/dust.service';
   styleUrls: ['./history-chart.component.css']
 })
 export class HistoryChartComponent implements OnInit {
-  private _id: number;
+  private _id = 0;
   private _dateFrom: BehaviorSubject<Date>;
   private _dateTo: BehaviorSubject<Date>;
-  data: IChartistData;
+  data!: IChartistData;
 
   @Input() set id(value: number) {
     this._id = value;
@@ -47,7 +47,7 @@ export class HistoryChartComponent implements OnInit {
       switchMap(([from, to]) => this._dustService.getDustHistory(this._id, from, to))
     )
     .subscribe(results => {
-        const labels = [], serie1 = [], serie2 = [];
+        const labels: Date[] = [], serie1: number[] = [], serie2: number[] = [];
         results.forEach(r => {
           labels.push(new Date(r.timestamp));
           serie1.push(r.particulateMatter25);

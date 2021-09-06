@@ -9,7 +9,7 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private _requestWatcherSubscription: Subscription;
+  private _requestWatcherSubscription!: Subscription;
 
   constructor(
     private _requestService: RunningRequestService,

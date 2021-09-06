@@ -10,8 +10,8 @@ import { DustService } from '../service/dust.service';
   styleUrls: ['./prediction-chart.component.css']
 })
 export class PredictionChartComponent implements OnInit {
-  private _id: number;
-  data: IChartistData;
+  private _id = 0;
+  data!: IChartistData;
 
   @Input() set id(value: number) {
     this._id = value;
@@ -22,7 +22,7 @@ export class PredictionChartComponent implements OnInit {
   ngOnInit(): void {
     this._dustService.getDustPrediction(this._id)
     .subscribe(results => {
-        const labels = [], serie1 = [], serie2 = [];
+        const labels: Date[] = [], serie1: number[] = [], serie2: number[] = [];
         results.forEach(r => {
           labels.push(new Date(r.timestamp));
           serie1.push(r.particulateMatter25);
