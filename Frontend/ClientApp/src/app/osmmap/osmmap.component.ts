@@ -95,7 +95,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this._mapMoveSubscription = fromEvent<MapEvent>(osmMap, 'moveend').pipe(
       debounceTime(1000),
-      // tslint:disable-next-line: no-non-null-assertion
       map(evt => [toLonLat(getBottomLeft(evt.frameState!.extent)), toLonLat(getTopRight(evt.frameState!.extent))]),
       switchMap(extent => timer(0, this._configService.autorefreshInterval).pipe( // emit immediatelly, then every configured refresh period
         map(_ => extent)
