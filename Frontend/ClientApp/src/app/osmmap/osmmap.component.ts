@@ -83,8 +83,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       projection: osmMap.getView().getProjection()
     });
     geolocation.on('error', err => console.error('geolocation error', err));
-    geolocation.on('change', evt => this._positionFeature.setGeometry((evt.target as Geolocation).getAccuracyGeometry()));
-    geolocation.once('change', evt => osmMap.getView().animate({center: (evt.target as Geolocation).getPosition()}));
+    geolocation.on('change', evt => this._positionFeature.setGeometry((evt.target as Geolocation)!.getAccuracyGeometry()!));
+    geolocation.once('change', evt => osmMap.getView().animate({center: (evt.target as Geolocation)!.getPosition()}));
 
     osmMap.on('click', evt => {
       const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
@@ -95,7 +95,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this._mapMoveSubscription = fromEvent<MapEvent>(osmMap, 'moveend').pipe(
       debounceTime(1000),
-      map(evt => [toLonLat(getBottomLeft(evt.frameState!.extent)), toLonLat(getTopRight(evt.frameState!.extent))]),
+      map(evt => [toLonLat(getBottomLeft(evt.frameState!.extent!)), toLonLat(getTopRight(evt.frameState!.extent!))]),
       switchMap(extent => timer(0, this._configService.autorefreshInterval).pipe( // emit immediatelly, then every configured refresh period
         map(_ => extent)
       )),
@@ -132,7 +132,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private navigateMapToUsersPosition(m: Map) {
-    m.getView().fit(this._positionFeature.getGeometry().getExtent(), { duration: 1000 });
+    m.getView().fit(this._positionFeature.getGeometry()!.getExtent(), { duration: 1000 });
   }
 
   // calculate minimal zoom level that allows to see only one world at given map size
