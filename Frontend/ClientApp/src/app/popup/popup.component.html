@@ -1,12 +1,12 @@
 <ng-template #content let-modal>
-  <div class="modal-header bg-dark text-white">
+  <div class="modal-header bg-dark">
     <h4 class="modal-title">{{name}}</h4>
     <small>
         {{latitude}}, {{longitude}}
     </small>
   </div>
   <div class="modal-body">
-    <ul ngbNav #nav="ngbNav" class="nav-tabs">
+    <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false">
       <li ngbNavItem>
         <a ngbNavLink>History</a>
         <ng-template ngbNavContent>
