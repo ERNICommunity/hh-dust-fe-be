@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
 import Map from 'ol/Map';
+import PluggableMap from 'ol/PluggableMap';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
@@ -131,7 +132,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private navigateMapToUsersPosition(m: Map) {
+  private navigateMapToUsersPosition(m: PluggableMap) {
     m.getView().fit(this._positionFeature.getGeometry()!.getExtent(), { duration: 1000 });
   }
 

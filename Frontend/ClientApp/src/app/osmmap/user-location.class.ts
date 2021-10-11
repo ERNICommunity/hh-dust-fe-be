@@ -1,8 +1,8 @@
 import { Control } from 'ol/control';
-import Map from 'ol/Map';
+import PluggableMap from 'ol/PluggableMap';
 
 export class UserLocation extends Control {
-  constructor(clickCallback: (m: Map) => void) {
+  constructor(clickCallback: (m: PluggableMap) => void) {
     const button = document.createElement('button');
     button.type = 'button';
     button.title = 'My location';
@@ -18,7 +18,7 @@ export class UserLocation extends Control {
       element
     });
 
-    button.addEventListener('click', () => clickCallback(super.getMap()), false);
-    button.addEventListener('touchstart', () => clickCallback(super.getMap()), false);
+    button.addEventListener('click', () => clickCallback(super.getMap()!), false);
+    button.addEventListener('touchstart', () => clickCallback(super.getMap()!), false);
   }
 }

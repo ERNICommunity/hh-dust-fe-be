@@ -18,7 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._requestWatcherSubscription = this._requestService.watcher.subscribe(
-      (x) => (x ? this._loadingBar.start() : this._loadingBar.complete())
+      (x) => (x ? this._loadingBar.useRef().start() : this._loadingBar.useRef().complete())
     );
   }
   ngOnDestroy(): void {
