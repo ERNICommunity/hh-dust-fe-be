@@ -163,7 +163,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             })
           }),
           text: new Text({
-            text: matter25.toFixed(1),
+            text: matter25?.toFixed(1),
             scale: 1.2,
             offsetY: 20
           })
@@ -176,7 +176,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             })
           }),
           text: new Text({
-            text: matter100.toFixed(1),
+            text: matter100?.toFixed(1),
             scale: 1.2
           })
         })
