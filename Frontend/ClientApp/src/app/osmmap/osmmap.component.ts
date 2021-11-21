@@ -34,8 +34,8 @@ import { ConfigService } from '../service/config.service';
   styleUrls: ['./osmmap.component.css']
 })
 export class OsmMapComponent implements OnInit, OnDestroy {
-  private _sensorsVectorSource = new VectorSource();
-  private _positionFeature = new Feature();
+  private _sensors = new VectorSource();
+  private _currentPosition = new Feature();
   private _mapMoveSubscription!: Subscription;
   private _resizeSubscription!: Subscription;
   @ViewChild(PopupComponent) private _popup!: PopupComponent;
@@ -51,13 +51,13 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         }),
         new VectorLayer({
           source: new VectorSource({
-            features: [this._positionFeature]
+            features: [this._currentPosition]
           })
         }),
         new VectorLayer({
           source: new Cluster({
             attributions: '© Dust data by <a href="https://www.betterask.erni/" target="_blank">ERNI</a> Community',
-            source: this._sensorsVectorSource,
+            source: this._sensors,
             distance: 30
           }),
           style: this.getStyle.bind(this)
@@ -84,13 +84,13 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       projection: osmMap.getView().getProjection()
     });
     geolocation.on('error', err => console.error('geolocation error', err));
-    geolocation.on('change', evt => this._positionFeature.setGeometry((evt.target as Geolocation)!.getAccuracyGeometry()!));
+    geolocation.on('change', evt => this._currentPosition.setGeometry((evt.target as Geolocation)!.getAccuracyGeometry()!));
     geolocation.once('change', evt => osmMap.getView().animate({center: (evt.target as Geolocation)!.getPosition()}));
 
     osmMap.on('click', evt => {
-      const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
-      if (features && features.get('features').length === 1) {
-        this._popup.open(features.get('features')[0].get('data'));
+      const cluster = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
+      if (cluster?.get('features')?.length === 1) {
+        this._popup.open(cluster.get('features')[0].get('data'));
       }
     });
 
@@ -108,7 +108,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       )),
     ).subscribe({
       next: result => this.drawMarkers(result),
-      error:err => console.error('mapMoveSubscription fail', err)
+      error: err => console.error('mapMoveSubscription fail', err)
     });
 
     this._resizeSubscription = fromEvent<ObjectEvent>(osmMap, 'change:size').pipe(
@@ -121,19 +121,15 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private drawMarkers(dtos: SensorDto[]) {
-    this._sensorsVectorSource.clear();
-    for (const dto of dtos) {
-      const sensorFeature = new Feature({
-        geometry: new Point(fromLonLat([dto.longitude, dto.latitude])),
-        name: dto.name,
-        data: dto
-      });
-      this._sensorsVectorSource.addFeature(sensorFeature);
-    }
+    this._sensors.clear();
+    this._sensors.addFeatures(dtos.map(x => new Feature({
+      geometry: new Point(fromLonLat([x.longitude, x.latitude])),
+      data: x
+    })));
   }
 
   private navigateMapToUsersPosition(m: PluggableMap) {
-    m.getView().fit(this._positionFeature.getGeometry()!.getExtent(), { duration: 1000 });
+    m.getView().fit(this._currentPosition.getGeometry()!.getExtent(), { duration: 1000 });
   }
 
   // calculate minimal zoom level that allows to see only one world at given map size
