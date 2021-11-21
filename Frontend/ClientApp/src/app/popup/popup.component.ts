@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SensorDto } from '../service/sensor.dto';
 
@@ -8,7 +8,7 @@ import { SensorDto } from '../service/sensor.dto';
   styleUrls: ['./popup.component.css']
 })
 export class PopupComponent {
-  @ViewChild('content') private _content: any;
+  @ViewChild('content') private _content!: TemplateRef<any>;
 
   id = 0;
   name: string | undefined;
