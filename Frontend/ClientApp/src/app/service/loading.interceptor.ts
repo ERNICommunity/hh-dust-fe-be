@@ -7,9 +7,9 @@ import { finalize } from 'rxjs/operators';
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
 
-  constructor(private _requestService: RunningRequestService) { }
+  public constructor(private _requestService: RunningRequestService) { }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     this._requestService.requestStarted();
     return next.handle(req).pipe(finalize(() => this._requestService.requestFinished()));
   }

@@ -2,7 +2,7 @@ import { Control } from 'ol/control';
 import PluggableMap from 'ol/PluggableMap';
 
 export class UserLocation extends Control {
-  constructor(clickCallback: (m: PluggableMap) => void) {
+  public constructor(clickCallback: (m: PluggableMap) => void) {
     const button = document.createElement('button');
     button.type = 'button';
     button.title = 'My location';

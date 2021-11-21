@@ -11,15 +11,15 @@ import { DustService } from '../service/dust.service';
 })
 export class PredictionChartComponent implements OnInit {
   private _id = 0;
-  data!: IChartistData;
+  public data!: IChartistData;
 
-  @Input() set id(value: number) {
+  @Input() public set id(value: number) {
     this._id = value;
   }
 
-  constructor(private _dustService: DustService) { }
+  public constructor(private _dustService: DustService) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this._dustService.getDustPrediction(this._id)
     .subscribe(results => {
         const labels: Date[] = [], serie1: number[] = [], serie2: number[] = [];

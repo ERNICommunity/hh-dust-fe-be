@@ -8,7 +8,7 @@ import { ConfigDto } from './config.dto';
 export class ConfigService {
   private static _autorefreshInterval: number;
 
-  get autorefreshInterval(): number {
+  public get autorefreshInterval(): number {
     return ConfigService._autorefreshInterval;
   }
 

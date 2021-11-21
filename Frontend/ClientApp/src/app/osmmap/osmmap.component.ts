@@ -40,9 +40,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   private _resizeSubscription!: Subscription;
   @ViewChild(PopupComponent) private _popup!: PopupComponent;
 
-  constructor(private _dustService: DustService, private _configService: ConfigService) {}
+  public constructor(private _dustService: DustService, private _configService: ConfigService) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     const osmMap = new Map({
       target: 'osm-map',
       layers: [
@@ -142,7 +142,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     return Math.ceil(Math.LOG2E * Math.log(width / 256));
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this._mapMoveSubscription.unsubscribe();
     this._resizeSubscription.unsubscribe();
   }

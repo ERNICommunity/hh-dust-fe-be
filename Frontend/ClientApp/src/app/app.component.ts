@@ -11,17 +11,18 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 export class AppComponent implements OnInit, OnDestroy {
   private _requestWatcherSubscription!: Subscription;
 
-  constructor(
+  public constructor(
     private _requestService: RunningRequestService,
     private _loadingBar: LoadingBarService
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this._requestWatcherSubscription = this._requestService.watcher.subscribe(
       (x) => (x ? this._loadingBar.useRef().start() : this._loadingBar.useRef().complete())
     );
   }
-  ngOnDestroy(): void {
+
+  public ngOnDestroy(): void {
     this._requestWatcherSubscription.unsubscribe();
   }
 }

@@ -16,33 +16,33 @@ export class HistoryChartComponent implements OnInit {
   private _id = 0;
   private _dateFrom: BehaviorSubject<Date>;
   private _dateTo: BehaviorSubject<Date>;
-  data!: IChartistData;
+  public data!: IChartistData;
 
-  @Input() set id(value: number) {
+  @Input() public set id(value: number) {
     this._id = value;
   }
 
-  set dateFrom(value: string) {
+  public set dateFrom(value: string) {
     this._dateFrom.next(new Date(value));
   }
-  get dateFrom(): string {
+  public get dateFrom(): string {
     return this.formatForDateInput(this._dateFrom.value);
   }
 
-  set dateTo(value: string) {
+  public set dateTo(value: string) {
     this._dateTo.next(new Date(value));
   }
-  get dateTo(): string {
+  public get dateTo(): string {
     return this.formatForDateInput(this._dateTo.value);
   }
 
-  constructor(private _dustService: DustService) {
+  public constructor(private _dustService: DustService) {
     const now = new Date();
     this._dateFrom = new BehaviorSubject<Date>(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 20, 0, 0, 0, 0));
     this._dateTo = new BehaviorSubject<Date>(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0 , 0, 0, 0));
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     combineLatest([this._dateFrom, this._dateTo]).pipe(
       switchMap(([from, to]) => this._dustService.getDustHistory(this._id, from, to))
     )

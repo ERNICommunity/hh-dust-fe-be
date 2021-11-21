@@ -10,17 +10,17 @@ import { SensorDto } from '../service/sensor.dto';
 export class PopupComponent {
   @ViewChild('content') private _content!: TemplateRef<any>;
 
-  id = 0;
-  name: string | undefined;
-  latitude: number | undefined;
-  longitude: number | undefined;
-  timestamp: string | undefined;
-  particulateMatter25: number | undefined;
-  particulateMatter100: number | undefined;
+  public id = 0;
+  public name: string | undefined;
+  public latitude: number | undefined;
+  public longitude: number | undefined;
+  public timestamp: string | undefined;
+  public particulateMatter25: number | undefined;
+  public particulateMatter100: number | undefined;
 
-  constructor(private _modalService: NgbModal) { }
+  public constructor(private _modalService: NgbModal) { }
 
-  open(data: SensorDto) {
+  public open(data: SensorDto) {
     this.id = data.id;
     this.name = data.name;
     this.latitude = data.latitude;

@@ -6,7 +6,7 @@ import { DataPointDto } from './data-point.dto';
 @Injectable()
 export class DustService {
 
-  constructor(
+  public constructor(
     private _httpClient: HttpClient,
     @Inject('BASE_URL') private _baseUrl: string
   ) { }
