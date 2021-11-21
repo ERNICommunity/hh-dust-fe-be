@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Frontend.Controllers
 {
+    [ApiController] 
     [Route("api/[controller]")]
     public class SensorsController : ControllerBase
     {
