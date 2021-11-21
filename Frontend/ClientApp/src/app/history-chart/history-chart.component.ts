@@ -46,7 +46,8 @@ export class HistoryChartComponent implements OnInit {
     combineLatest([this._dateFrom, this._dateTo]).pipe(
       switchMap(([from, to]) => this._dustService.getDustHistory(this._id, from, to))
     )
-    .subscribe(results => {
+    .subscribe({
+      next: results => {
         const labels: Date[] = [], serie1: number[] = [], serie2: number[] = [];
         results.forEach(r => {
           labels.push(new Date(r.timestamp));
@@ -55,8 +56,8 @@ export class HistoryChartComponent implements OnInit {
         });
         this.data = { labels, series: [ serie1, serie2 ] };
       },
-      err => console.error(err)
-    );
+      error: err => console.error(err)
+    });
   }
 
   private formatForDateInput(date: Date) {

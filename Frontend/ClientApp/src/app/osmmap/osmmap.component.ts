@@ -106,18 +106,18 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           return EMPTY; // if call to server fails just ignore it
         })
       )),
-    ).subscribe(
-      result => this.drawMarkers(result),
-      err => console.error('mapMoveSubscription fail', err)
-    );
+    ).subscribe({
+      next: result => this.drawMarkers(result),
+      error:err => console.error('mapMoveSubscription fail', err)
+    });
 
     this._resizeSubscription = fromEvent<ObjectEvent>(osmMap, 'change:size').pipe(
       debounceTime(100),
       map(evt => this.calculateMinZoom((evt.target as Map).getTargetElement()))
-    ).subscribe(
-      zoom => osmMap.getView().setMinZoom(zoom),
-      err => console.error('resizeSubscription fail', err)
-    );
+    ).subscribe({
+      next: zoom => osmMap.getView().setMinZoom(zoom),
+      error: err => console.error('resizeSubscription fail', err)
+    });
   }
 
   private drawMarkers(dtos: SensorDto[]) {

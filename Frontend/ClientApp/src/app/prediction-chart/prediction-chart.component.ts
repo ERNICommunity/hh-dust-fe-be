@@ -21,7 +21,8 @@ export class PredictionChartComponent implements OnInit {
 
   public ngOnInit(): void {
     this._dustService.getDustPrediction(this._id)
-    .subscribe(results => {
+    .subscribe({
+      next: results => {
         const labels: Date[] = [], serie1: number[] = [], serie2: number[] = [];
         results.forEach(r => {
           labels.push(new Date(r.timestamp));
@@ -30,7 +31,7 @@ export class PredictionChartComponent implements OnInit {
         });
         this.data = { labels, series: [ serie1, serie2 ] };
       },
-      err => console.error(err)
-    );
+      error: err => console.error(err)
+    });
   }
 }
