@@ -5,5 +5,10 @@
     "**/bin": true,
     "**/obj": true
   },
-  "eslint.workingDirectories": ["Frontend/ClientApp"]
+  "eslint.workingDirectories": [
+    "Frontend/ClientApp"
+  ],
+  "npm.includeDirectories": [
+    "Frontend/ClientApp"
+  ]
 }

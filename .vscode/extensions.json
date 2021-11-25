@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "eg2.vscode-npm-script",
+        "angular.ng-template",
+        "ms-dotnettools.csharp",
+        "editorconfig.editorconfig",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+    ]
+}
